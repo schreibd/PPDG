@@ -26,8 +26,6 @@ public class InputSystem : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 
-
-        
         var move = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0);
         Debug.Log(animator.GetBool("idle"));
         Debug.Log(move.x);
