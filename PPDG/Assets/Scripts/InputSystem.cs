@@ -27,8 +27,6 @@ public class InputSystem : MonoBehaviour {
 	void FixedUpdate () {
 
         var move = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0);
-        Debug.Log(animator.GetBool("idle"));
-        Debug.Log(move.x);
         if (move.x < 0.0f)
         {
             //Debug.Log(Input.GetAxis("Horizontal"));
@@ -36,6 +34,17 @@ public class InputSystem : MonoBehaviour {
             animator.SetBool("idle", false);
             
             //m_PlayerTransform.localScale.Set(-1, m_PlayerTransform.localScale.y, m_PlayerTransform.localScale.z);
+        }
+
+        if(Input.GetButtonDown("Fire1"))
+        {
+            animator.SetBool("attacking", true);
+        }
+
+        if(animator.GetCurrentAnimatorStateInfo(0).IsName("Attack R") || animator.GetCurrentAnimatorStateInfo(0).IsName("Attack L"))
+        {
+            Debug.Log("Howdy");
+            animator.SetBool("attacking", false);
         }
 
         if(move.x == 0.0f)
