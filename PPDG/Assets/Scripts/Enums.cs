@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Enums : MonoBehaviour {
 
-    public enum Direction { NORTH, EAST, SOUTH, WEST };
+    public enum Direction { DEADEND,  NORTH, EAST, SOUTH, WEST};
     public enum Difficulty { VERY_EASY, EASY, NORMAL, HARD, NUTS };
 
 }

@@ -16,32 +16,19 @@ public class RNGenerator : MonoBehaviour{
     private List<float> numberSequence;
     // Use this for initialization
 
-    /*void Start()
-    {
-        Random.InitState(playerSeed.GetHashCode());
-        numberSequence = new List<float>();
-        while(!isFinished)
-        {
-            numberSequence.Add(Random.Range(0, 100));
-
-            if(numberSequence.Count == 2)
-            {
-                float temp = numberSequence[1];
-                if(temp >= 0.0f && temp <= 24.99f)
-                {
-
-                }
-
-
-            }
-        }  
-        
-    } */
-
+    //Sets seed as state for rn generation
     public void init(string input, List<float> sequence)
     {
         Random.InitState(input.GetHashCode());
         numberSequence = sequence;
+    }
+
+
+    //Can be used to get some random numbers for level instantiation
+    public int getInitValues()
+    {
+        int result = Mathf.RoundToInt(Random.Range(5, 9));
+        return result;
     }
 
     public float getNextNumber(float min, float max)

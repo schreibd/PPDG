@@ -188,10 +188,10 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 95888051}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 23.696608, y: 12.666665, z: -100}
-  m_LocalScale: {x: 6.5641575, y: 6.6666665, z: 2}
+  m_LocalPosition: {x: 8.053593, y: 4.5299997, z: -50}
+  m_LocalScale: {x: 0.78769886, y: 0.79999995, z: 1}
   m_Children: []
-  m_Father: {fileID: 1747520737}
+  m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &242087913
@@ -236,8 +236,20 @@ Prefab:
     - target: {fileID: 114463690981028090, guid: c2165d85b71da3a48be322e68bda5576,
         type: 2}
       propertyPath: playerSeed
-      value: LucasStinktNachAbgestandenenEiern
+      value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 114579578017565306, guid: c2165d85b71da3a48be322e68bda5576,
+        type: 2}
+      propertyPath: floorTexture
+      value: 
+      objectReference: {fileID: 21300000, guid: da291ca8bd65d0445b91abae1fffb70c,
+        type: 3}
+    - target: {fileID: 114579578017565306, guid: c2165d85b71da3a48be322e68bda5576,
+        type: 2}
+      propertyPath: wallTexture
+      value: 
+      objectReference: {fileID: 21300000, guid: e99ffec0d064d2e46ac0127b0304617e,
+        type: 3}
     m_RemovedComponents:
     - {fileID: 114057427236818612, guid: c2165d85b71da3a48be322e68bda5576, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: c2165d85b71da3a48be322e68bda5576, type: 2}
@@ -389,7 +401,7 @@ Transform:
   - {fileID: 250211202}
   - {fileID: 1931579485}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &992474085
 GameObject:
@@ -560,7 +572,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4404253466203436, guid: 94d6d7ddfee3a454eaf8041a57152b39, type: 2}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 212666302374731966, guid: 94d6d7ddfee3a454eaf8041a57152b39,
         type: 2}
@@ -629,11 +641,6 @@ Prefab:
 --- !u!1 &1747520735 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1703117258792256, guid: 94d6d7ddfee3a454eaf8041a57152b39,
-    type: 2}
-  m_PrefabInternal: {fileID: 1227082071}
---- !u!4 &1747520737 stripped
-Transform:
-  m_PrefabParentObject: {fileID: 4404253466203436, guid: 94d6d7ddfee3a454eaf8041a57152b39,
     type: 2}
   m_PrefabInternal: {fileID: 1227082071}
 --- !u!114 &1747520738

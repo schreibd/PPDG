@@ -52,63 +52,8 @@ public class RoomBuilder : Singleton<RoomBuilder> {
         {
             Destroy(gameObject);
         }
-
-        
-
-        //createTilemaps();
-         /*
-
-        //Set the number of rooms in this level
-        rooms = new GameObject[10];
-        
-        
-
-        createTilemaps();
-
-        currentRoom = this.gameObject.AddComponent<RoomComponent>();
-
-       // currentRoom.Init(width, height);
-
-        DoorTile door = DoorTile.CreateInstance<DoorTile>();
-        door.direction = Enums.Direction.NORTH;
-        door.sprite = doorTexture;
-        door.colliderType = Tile.ColliderType.Sprite;
-
-        currentRoom.addDoor(door);
-
-        door = DoorTile.CreateInstance<DoorTile>();
-        door.direction = Enums.Direction.EAST;
-        door.sprite = doorTexture;
-        door.colliderType = Tile.ColliderType.Sprite;
-        currentRoom.addDoor(door);
-
-
-        door = DoorTile.CreateInstance<DoorTile>();
-        door.direction = Enums.Direction.SOUTH;
-        door.sprite = doorTexture;
-        door.colliderType = Tile.ColliderType.Sprite;
-        currentRoom.addDoor(door);
-
-        door = DoorTile.CreateInstance<DoorTile>();
-        door.direction = Enums.Direction.WEST;
-        door.sprite = doorTexture;
-        door.colliderType = Tile.ColliderType.Sprite;
-        currentRoom.addDoor(door); */
-
-    }
-
-
-    public void saveRoom()
-    {
-        rooms[numOfRooms-1] = Instantiate<GameObject>(grid);
-        rooms[numOfRooms-1].SetActive(false);
-        numOfRooms++;
-    }
-
-    public void createTilemaps()
-    {
         grid = GameObject.Find("Grid");
-        
+
         currFloorMap = grid.transform.GetChild(0).GetComponent<Tilemap>();
 
         //Create a ColliderTilemap for walls and obstacles
@@ -122,19 +67,32 @@ public class RoomBuilder : Singleton<RoomBuilder> {
         currDoorMap.gameObject.AddComponent<Rigidbody2D>();
         currDoorMap.GetComponent<Rigidbody2D>().gravityScale = 0;
         currDoorMap.GetComponent<Rigidbody2D>().isKinematic = true;
-        currDoorMap.gameObject.AddComponent<DoorController>(); 
+        currDoorMap.gameObject.AddComponent<DoorController>();
+    }
+
+
+    public void saveRoom()
+    {
+        rooms[numOfRooms-1] = Instantiate<GameObject>(grid);
+        rooms[numOfRooms-1].SetActive(false);
+        numOfRooms++;
+    }
+
+    public void createTilemaps()
+    {
+        
     }
 
     public void buildRoom(RoomComponent roomData)
     {
+        clearRoom();
 
-        createTilemaps();
         currentRoom = roomData;
         drawFloor();
         drawWalls();
 
         int cnt = 0; 
-        while(cnt < currentRoom.getNumOfDoors())
+        while(cnt < 4)
         {
             DoorTile door = DoorTile.CreateInstance<DoorTile>();
             door.sprite = doorTexture;
@@ -187,7 +145,7 @@ public class RoomBuilder : Singleton<RoomBuilder> {
             //Needs variation for texture
             tile.sprite = wallTexture;
             currWallMap.SetTile(new Vector3Int(i, 0, 0)+hOffset, tile);
-            currWallMap.SetTile(new Vector3Int(i, currentRoom.getHeight() + 1, 0) + hOffset, tile);
+            currWallMap.SetTile(new Vector3Int(i, currentRoom.getHeight()-1, 0) + hOffset, tile);
         }
         
         for(int j = 0; j < height; j++)
@@ -195,21 +153,12 @@ public class RoomBuilder : Singleton<RoomBuilder> {
             tile = Tile.CreateInstance<Tile>();
             tile.sprite = wallTexture;
             currWallMap.SetTile(new Vector3Int(-1, j, 0),tile);
-            currWallMap.SetTile(new Vector3Int(currentRoom.getWidth(), j, 0), tile);
+            currWallMap.SetTile(new Vector3Int(currentRoom.getWidth() + 2, j, 0), tile);
         }
     }
 
     void buildDoors(DoorTile door)
     {
-        /*
-        //Create new instance of a door
-        DoorTile door = DoorTile.CreateInstance<DoorTile>();
-
-        //Needs variation for texture
-        door.sprite = doorTexture;
-        door.colliderType = Tile.ColliderType.Sprite;
-        door.direction = (Enums.Direction)direction; */
-
         //Stores the rotation we want to use in degree 
         Quaternion rotation;
         //Matrix we need to use to rotate our tile to right direction

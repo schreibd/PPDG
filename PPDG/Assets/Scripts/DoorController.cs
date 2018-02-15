@@ -6,10 +6,12 @@ using UnityEngine.Tilemaps;
 public class DoorController : MonoBehaviour {
 
     Tilemap doormap;
+    DungeonMaster master;
     
     // Use this for initialization
     void Start () {
-        doormap = GameObject.Find("Grid").transform.GetChild(2).GetComponent<Tilemap>();       
+        doormap = GameObject.Find("Grid").transform.GetChild(2).GetComponent<Tilemap>();
+        master = GameObject.Find("DungeonManager").GetComponent<DungeonMaster>();
 	}
 	
 	// Update is called once per frame
@@ -28,11 +30,16 @@ public class DoorController : MonoBehaviour {
 
             //Check if door
             if (doormap.GetTile<DoorTile>(tilePos))
+            {
                 //Check direction player exits room
-                Debug.Log(doormap.GetTile<DoorTile>(tilePos).direction);
+                //Debug.Log(doormap.GetTile<DoorTile>(tilePos).direction);
+                master.moveForward(tilePos, doormap.GetTile<DoorTile>(tilePos).direction);
+                //TODO: Teleport player to next room
+            }
+
         }
 
 
-        //TODO: Teleport player to next room
+        
     }
 }
