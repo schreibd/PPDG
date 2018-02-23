@@ -34,11 +34,12 @@ public class RoomBuilder : Singleton<RoomBuilder> {
     [SerializeField]
     public int height;
 
-    GameObject[] rooms = new GameObject[10];
+    List<int> builtRooms;
 
     int numOfRooms = 1;
 
     RoomComponent currentRoom;
+
 
     // Use this for initialization 
     void Start () {
@@ -52,6 +53,8 @@ public class RoomBuilder : Singleton<RoomBuilder> {
         {
             Destroy(gameObject);
         }
+
+        builtRooms = new List<int>();
         grid = GameObject.Find("Grid");
 
         currFloorMap = grid.transform.GetChild(0).GetComponent<Tilemap>();
@@ -70,13 +73,31 @@ public class RoomBuilder : Singleton<RoomBuilder> {
         currDoorMap.gameObject.AddComponent<DoorController>();
     }
 
-
+    /*
     public void saveRoom()
     {
-        rooms[numOfRooms-1] = Instantiate<GameObject>(grid);
-        rooms[numOfRooms-1].SetActive(false);
-        numOfRooms++;
+        if(!isRoomSaved(grid))
+        {
+            GameObject temp = Instantiate<GameObject>(grid);
+            rooms[numOfRooms - 1] = temp;
+            rooms[numOfRooms - 1].SetActive(false);
+            numOfRooms++;
+        }        
     }
+
+    public bool isRoomSaved(GameObject temp)
+    {
+        foreach(GameObject room in rooms)
+        {
+            if (temp == room)
+            {
+                Debug.Log("YAAA");
+                return true;
+            }
+                
+        }
+        return false;
+    } */
 
     public void createTilemaps()
     {
@@ -101,13 +122,39 @@ public class RoomBuilder : Singleton<RoomBuilder> {
             currentRoom.addDoor(door);
             cnt++;
         }
+
+        insertMissingDoors();
+
+        
         foreach (DoorTile door in currentRoom.getDoors())
         {
             buildDoors(door);
         }
 
-        saveRoom();
+        if(!builtRooms.Contains(currentRoom.getRoomNumber()))
+            builtRooms.Add(currentRoom.getRoomNumber());
 
+        //saveRoom();
+
+    }
+
+
+    public void insertMissingDoors()
+    {
+        int cnt = 1;
+        while (cnt <= 4)
+        {
+            if (currentRoom.hasNeighbour(cnt) && !currentRoom.hasDirection(cnt))
+            {
+                DoorTile door = DoorTile.CreateInstance<DoorTile>();
+                door.sprite = doorTexture;
+                door.colliderType = Tile.ColliderType.Sprite;
+                door.direction = (Enums.Direction)cnt;
+                currentRoom.addDoor(door);
+
+            }
+            cnt++;
+        }
     }
 
     void clearRoom()
@@ -157,12 +204,18 @@ public class RoomBuilder : Singleton<RoomBuilder> {
         }
     }
 
+
+
     void buildDoors(DoorTile door)
     {
-        //Stores the rotation we want to use in degree 
-        Quaternion rotation;
-        //Matrix we need to use to rotate our tile to right direction
-        Matrix4x4 rotationM;
+        /* Matrix4x4 identity = Matrix4x4.identity;
+         Quaternion identityQ = Quaternion.identity;
+         identity = Matrix4x4.Rotate(identityQ);
+         door.transform *= identity;
+         */
+        if (!currentRoom.hasNeighbour((int)door.direction))
+            return;
+
 
         switch (door.direction)
         {
@@ -171,29 +224,72 @@ public class RoomBuilder : Singleton<RoomBuilder> {
                 currDoorMap.SetTile(new Vector3Int((width / 2), height, 0), door);
                 break;
             case Enums.Direction.EAST:
-                rotation = Quaternion.Euler(0, 0, -90.0f);
-                rotationM = Matrix4x4.Rotate(rotation);
-                door.transform *= rotationM;
+                rotateDoor(door);
+                //rotation = Quaternion.Euler(0, 0, -90.0f);
+                //rotationM = Matrix4x4.Rotate(rotation);
+                //door.transform *= rotationM;
                 currWallMap.SetTile(new Vector3Int(width, height / 2, 0), null);
                 currDoorMap.SetTile(new Vector3Int(width, height / 2, 0), door);
                 break;
             case Enums.Direction.SOUTH:
-                rotation = Quaternion.Euler(0, 0, 180.0f);
-                rotationM = Matrix4x4.Rotate(rotation);
-                door.transform *= rotationM;
+                rotateDoor(door);
+                //rotation = Quaternion.Euler(0, 0, 180.0f);
+                //rotationM = Matrix4x4.Rotate(rotation);
+                //door.transform *= rotationM;
                 currWallMap.SetTile(new Vector3Int((width / 2), -1, 0), null);
                 currDoorMap.SetTile(new Vector3Int((width / 2), -1, 0), door);
                 break;
             case Enums.Direction.WEST:
-                rotation = Quaternion.Euler(0, 0, 90.0f);
-                rotationM = Matrix4x4.Rotate(rotation);
-                door.transform *= rotationM;
+                rotateDoor(door);
+                //rotation = Quaternion.Euler(0, 0, 90.0f);
+                //rotationM = Matrix4x4.Rotate(rotation);
+                //door.transform *= rotationM;
                 currWallMap.SetTile(new Vector3Int(-1, height / 2, 0), null);
                 currDoorMap.SetTile(new Vector3Int(-1, height / 2, 0), door);
                 break;
             default:
                 break;
         }
+
+
+
+    }
+
+
+    void rotateDoor(DoorTile door)
+    {
+        if (builtRooms.Contains(currentRoom.getRoomNumber()))
+        {
+            return;
+        }
+            
+        else
+        {
+            //Stores the rotation we want to use in degree 
+            Quaternion rotation;
+            //Matrix we need to use to rotate our tile to right direction
+            Matrix4x4 rotationM;
+
+            switch (door.direction)
+            {
+                case Enums.Direction.EAST:
+                    rotation = Quaternion.Euler(0, 0, -90.0f);
+                    rotationM = Matrix4x4.Rotate(rotation);
+                    door.transform *= rotationM;
+                    break;
+                case Enums.Direction.SOUTH:
+                    rotation = Quaternion.Euler(0, 0, 180.0f);
+                    rotationM = Matrix4x4.Rotate(rotation);
+                    door.transform *= rotationM;
+                    break;
+                case Enums.Direction.WEST:
+                    rotation = Quaternion.Euler(0, 0, 90.0f);
+                    rotationM = Matrix4x4.Rotate(rotation);
+                    door.transform *= rotationM;
+                    break;
+            }
+        }
+
     }
 
 

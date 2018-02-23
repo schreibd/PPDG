@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RoomComponent : ScriptableObject {
+public class RoomComponent {
 
     int width;
     int height;
@@ -15,26 +15,28 @@ public class RoomComponent : ScriptableObject {
     public RoomComponent topNeighbour;
     public RoomComponent rightNeighbour;
     public RoomComponent bottomNeighbour;
-   
 
+    [SerializeField]
     private int number;
-    
 
 
-	// Use this for initialization
-	void Start () {
-       
-	}
+
+
+
+    // Use this for initialization
+    void Start() {
+
+    }
 
     public bool containsDirection(Enums.Direction direction)
     {
         return directions.Contains((int)direction);
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+    // Update is called once per frame
+    void Update() {
+
+    }
 
 
 
@@ -77,6 +79,57 @@ public class RoomComponent : ScriptableObject {
             directions.Add(direction);
         else
             directions.Add(0);
+    }
+
+    public bool hasDirection(int direction)
+    {
+        bool result = false;
+        foreach (int value in directions)
+        {
+            if (direction == value)
+            {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+    public bool hasNeighbour(int direction)
+    {
+        Enums.Direction dir = (Enums.Direction)direction;
+        bool result = true;
+        if (dir == Enums.Direction.NORTH)
+        {
+            if (topNeighbour == null)
+            {
+                result = false;
+            }
+        }
+        else if (dir == Enums.Direction.EAST)
+        {
+            if (rightNeighbour == null)
+            {
+                result = false;
+            }
+        }
+        else if (dir == Enums.Direction.SOUTH)
+        {
+            if (bottomNeighbour == null)
+            {
+                result = false;
+            }
+        }
+        else if (dir == Enums.Direction.WEST)
+        {
+            if (leftNeihghbour == null)
+            {
+                result = false;
+            }
+        }
+        return result;
+       
+             
     }
 
     public int getWidth()
