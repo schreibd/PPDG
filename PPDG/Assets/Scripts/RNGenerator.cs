@@ -27,7 +27,7 @@ public class RNGenerator : MonoBehaviour{
     //Can be used to get some random numbers for level instantiation
     public int getInitValues()
     {
-        int result = Mathf.RoundToInt(Random.Range(5, 9));
+        int result = Mathf.RoundToInt(Random.Range(5, 15));
         return result;
     }
 

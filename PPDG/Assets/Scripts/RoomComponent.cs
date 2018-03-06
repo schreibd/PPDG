@@ -8,6 +8,8 @@ public class RoomComponent {
     int height;
     List<DoorTile> doors = new List<DoorTile>();
     int numOfDoors;
+    int xPos;
+    int yPos;
 
     List<int> directions = new List<int>();
 
@@ -15,6 +17,8 @@ public class RoomComponent {
     public RoomComponent topNeighbour;
     public RoomComponent rightNeighbour;
     public RoomComponent bottomNeighbour;
+
+    private Rect minimapPosition;
 
     [SerializeField]
     private int number;
@@ -36,6 +40,44 @@ public class RoomComponent {
     // Update is called once per frame
     void Update() {
 
+    }
+
+    public void setMinimapPosition(Rect position)
+    {
+        minimapPosition = position;
+    }
+
+    public Rect getMinimapPosition()
+    {
+        return minimapPosition;
+    }
+
+    /*public void killDoor(int direction)
+    {
+        foreach(DoorTile door in doors)
+        {
+            if((int)door.direction == direction)
+            {
+                doors.Remove(door);
+                directions.Remove(direction);
+            }
+        }
+    } */
+
+    public void setPosition(int x, int y)
+    {
+        xPos = x;
+        yPos = y;
+    }
+
+    public int getXPos()
+    {
+        return xPos;
+    }
+
+    public int getYPos()
+    {
+        return yPos;
     }
 
 
@@ -79,6 +121,18 @@ public class RoomComponent {
             directions.Add(direction);
         else
             directions.Add(0);
+    }
+
+    public bool isExisting(RoomComponent optionA, RoomComponent optionB)
+    {
+        bool result = false;
+
+        if(optionA.hasNeighbour(2) && optionA.rightNeighbour == optionB.topNeighbour && optionB.hasNeighbour(4))
+        {
+            result = true;
+        }
+
+        return result;
     }
 
     public bool hasDirection(int direction)

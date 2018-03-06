@@ -19,6 +19,8 @@ public class RoomBuilder : Singleton<RoomBuilder> {
 
     public GameObject grid;
 
+    public Minimap minimap;
+
     [SerializeField]
     public Sprite wallTexture;
 
@@ -42,7 +44,7 @@ public class RoomBuilder : Singleton<RoomBuilder> {
 
 
     // Use this for initialization 
-    void Start () {
+    void Awake () {
 
          if (instance == null)
         {
@@ -71,46 +73,24 @@ public class RoomBuilder : Singleton<RoomBuilder> {
         currDoorMap.GetComponent<Rigidbody2D>().gravityScale = 0;
         currDoorMap.GetComponent<Rigidbody2D>().isKinematic = true;
         currDoorMap.gameObject.AddComponent<DoorController>();
+
+
+        minimap = GameObject.Find("Canvas").transform.GetChild(0).GetComponent<Minimap>();
     }
 
-    /*
-    public void saveRoom()
-    {
-        if(!isRoomSaved(grid))
-        {
-            GameObject temp = Instantiate<GameObject>(grid);
-            rooms[numOfRooms - 1] = temp;
-            rooms[numOfRooms - 1].SetActive(false);
-            numOfRooms++;
-        }        
-    }
-
-    public bool isRoomSaved(GameObject temp)
-    {
-        foreach(GameObject room in rooms)
-        {
-            if (temp == room)
-            {
-                Debug.Log("YAAA");
-                return true;
-            }
-                
-        }
-        return false;
-    } */
 
     public void createTilemaps()
     {
         
     }
 
-    public void buildRoom(RoomComponent roomData)
+    public void buildRoom(RoomComponent roomData, Enums.Direction direction)
     {
         clearRoom();
-
         currentRoom = roomData;
         drawFloor();
         drawWalls();
+
 
         int cnt = 0; 
         while(cnt < 4)
@@ -123,6 +103,8 @@ public class RoomBuilder : Singleton<RoomBuilder> {
             cnt++;
         }
 
+
+
         insertMissingDoors();
 
         
@@ -134,18 +116,23 @@ public class RoomBuilder : Singleton<RoomBuilder> {
         if(!builtRooms.Contains(currentRoom.getRoomNumber()))
             builtRooms.Add(currentRoom.getRoomNumber());
 
+        minimap.drawRoom(currentRoom, direction);
         //saveRoom();
+        
 
     }
 
 
     public void insertMissingDoors()
     {
+        
         int cnt = 1;
         while (cnt <= 4)
         {
+            
             if (currentRoom.hasNeighbour(cnt) && !currentRoom.hasDirection(cnt))
             {
+                
                 DoorTile door = DoorTile.CreateInstance<DoorTile>();
                 door.sprite = doorTexture;
                 door.colliderType = Tile.ColliderType.Sprite;
@@ -153,6 +140,7 @@ public class RoomBuilder : Singleton<RoomBuilder> {
                 currentRoom.addDoor(door);
 
             }
+
             cnt++;
         }
     }
