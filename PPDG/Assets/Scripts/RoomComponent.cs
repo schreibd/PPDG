@@ -7,6 +7,7 @@ public class RoomComponent {
     int width;
     int height;
     List<DoorTile> doors = new List<DoorTile>();
+    private GameObject key;
     int numOfDoors;
     int xPos;
     int yPos;
@@ -23,8 +24,31 @@ public class RoomComponent {
     [SerializeField]
     private int number;
 
+    private int monsterCount;
+
+    private List<Enums.Monster> monsters = new List<Enums.Monster>();
 
 
+
+    public int getMonsterCount()
+    {
+        return monsterCount;
+    }
+
+    public void setMonsterCount(int monsterCount)
+    {
+        this.monsterCount = monsterCount;
+    }
+
+    public void addMonster(Enums.Monster monster)
+    {
+        monsters.Add(monster);
+    }
+
+    public List<Enums.Monster> getMonsters()
+    {
+        return monsters;
+    }
 
 
     // Use this for initialization
@@ -40,6 +64,11 @@ public class RoomComponent {
     // Update is called once per frame
     void Update() {
 
+    }
+
+    public void setDirections(List<int> newDirections)
+    {
+        directions = newDirections;
     }
 
     public void setMinimapPosition(Rect position)
@@ -107,7 +136,7 @@ public class RoomComponent {
 
     public void addDoor(DoorTile door)
     {
-        doors.Add(door);
+            doors.Add(door);
     }
 
     public List<int> getDirections()
@@ -121,6 +150,59 @@ public class RoomComponent {
             directions.Add(direction);
         else
             directions.Add(0);
+    }
+
+    public void addKey(GameObject key)
+    {
+        this.key = key;
+    }
+
+    public GameObject getKey()
+    {
+        return key;
+    }
+
+    public RoomComponent getNeighbour(int direction)
+    {
+        RoomComponent neighbour = null;
+        switch ((Enums.Direction)direction)
+        {
+            case Enums.Direction.NORTH:
+                neighbour = topNeighbour;
+                break;
+            case Enums.Direction.EAST:
+                neighbour = rightNeighbour;
+                break;
+            case Enums.Direction.SOUTH:
+                neighbour = bottomNeighbour;
+                break;
+            case Enums.Direction.WEST:
+                neighbour = leftNeihghbour;
+                break;
+        }
+        return neighbour;
+    }
+
+    public void clearDirections()
+    {
+        directions.Clear();
+        System.GC.Collect();
+    }
+
+    public Enums.Direction findDirection(RoomComponent neighbour)
+    {
+        Enums.Direction result = Enums.Direction.DEADEND;
+
+        if (neighbour == topNeighbour)
+            result = Enums.Direction.NORTH;
+        else if (neighbour == rightNeighbour)
+            result = Enums.Direction.EAST;
+        else if (neighbour == bottomNeighbour)
+            result = Enums.Direction.SOUTH;
+        else if (neighbour == leftNeihghbour)
+            result = Enums.Direction.WEST;
+
+        return result;
     }
 
     public bool isExisting(RoomComponent optionA, RoomComponent optionB)
@@ -147,6 +229,30 @@ public class RoomComponent {
             }
         }
         return result;
+    }
+
+    public bool hasDoor(DoorTile door)
+    {
+        bool result = false;
+        foreach(DoorTile temp in doors)
+        {
+            if (temp.direction == door.direction)
+            {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+    public DoorTile findDoor(DoorTile door)
+    {
+        foreach(DoorTile temp in doors)
+        {
+            if (temp.direction == door.direction)
+                return temp;
+        }
+        return null;
     }
 
     public bool hasNeighbour(int direction)

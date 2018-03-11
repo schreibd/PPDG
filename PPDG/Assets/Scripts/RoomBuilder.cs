@@ -31,6 +31,9 @@ public class RoomBuilder : Singleton<RoomBuilder> {
     public Sprite doorTexture;
 
     [SerializeField]
+    public Sprite lockDoorTexture;
+
+    [SerializeField]
     public int width;
 
     [SerializeField]
@@ -79,12 +82,8 @@ public class RoomBuilder : Singleton<RoomBuilder> {
     }
 
 
-    public void createTilemaps()
-    {
-        
-    }
 
-    public void buildRoom(RoomComponent roomData, Enums.Direction direction)
+    public void buildRoom(RoomComponent roomData, Enums.Direction direction, RNGenerator generator, List<GameObject> activeMonsters)
     {
         clearRoom();
         currentRoom = roomData;
@@ -92,14 +91,26 @@ public class RoomBuilder : Singleton<RoomBuilder> {
         drawWalls();
 
 
-        int cnt = 0; 
-        while(cnt < 4)
+        // int cnt = 0; 
+        int lockedDoors = roomData.getDoors().Count;
+        int cnt = 0;
+        while (cnt < 4)
         {
             DoorTile door = DoorTile.CreateInstance<DoorTile>();
             door.sprite = doorTexture;
             door.colliderType = Tile.ColliderType.Sprite;
             door.direction = (Enums.Direction)currentRoom.getDirections()[cnt];
-            currentRoom.addDoor(door);
+            if(!currentRoom.hasDoor(door))
+                currentRoom.addDoor(door);
+            else
+            {
+                door = currentRoom.findDoor(door);
+                if (door.locked)
+                    door.sprite = lockDoorTexture;
+                else
+                    door.sprite = doorTexture;
+                door.colliderType = Tile.ColliderType.Sprite;
+            }
             cnt++;
         }
 
@@ -116,20 +127,46 @@ public class RoomBuilder : Singleton<RoomBuilder> {
         if(!builtRooms.Contains(currentRoom.getRoomNumber()))
             builtRooms.Add(currentRoom.getRoomNumber());
 
-        minimap.drawRoom(currentRoom, direction);
-        //saveRoom();
+        if (currentRoom.getKey())
+            currentRoom.getKey().SetActive(true);
         
 
+        minimap.drawRoom(currentRoom, direction);
+        //saveRoom();
+
+        spawnMonster(generator, activeMonsters);
+        
+
+    }
+
+    public void spawnMonster(RNGenerator generator, List<GameObject> activeMonsters)
+    {
+        foreach (GameObject actM in activeMonsters)
+            Destroy(actM);
+        //GameObject key = Instantiate(Resources.Load("Key", typeof(GameObject))) as GameObject;
+        foreach(Enums.Monster monster in currentRoom.getMonsters())
+        {
+            int x = MonsterSpawner.calcX(generator, width);
+            int y = MonsterSpawner.calcY(generator, height);
+
+            float posX = currFloorMap.CellToWorld(new Vector3Int(x, y, 0)).x;
+            float posY = currFloorMap.CellToWorld(new Vector3Int(x, y, 0)).y;
+
+            GameObject temp = Instantiate(Resources.Load(monster.ToString(), typeof(GameObject))) as GameObject;
+            temp.transform.position.Set(posX, posY, 0);
+
+            activeMonsters.Add(temp);
+
+            
+        }
     }
 
 
     public void insertMissingDoors()
     {
-        
         int cnt = 1;
         while (cnt <= 4)
         {
-            
             if (currentRoom.hasNeighbour(cnt) && !currentRoom.hasDirection(cnt))
             {
                 
@@ -140,7 +177,6 @@ public class RoomBuilder : Singleton<RoomBuilder> {
                 currentRoom.addDoor(door);
 
             }
-
             cnt++;
         }
     }
@@ -238,9 +274,6 @@ public class RoomBuilder : Singleton<RoomBuilder> {
             default:
                 break;
         }
-
-
-
     }
 
 
@@ -279,6 +312,4 @@ public class RoomBuilder : Singleton<RoomBuilder> {
         }
 
     }
-
-
 }

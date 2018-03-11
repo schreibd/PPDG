@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DungeonMaster : MonoBehaviour {
 
@@ -9,7 +10,7 @@ public class DungeonMaster : MonoBehaviour {
 
     private RNGenerator generator;
 
-    public List<float> sequence;
+    public List<float> roomSequence;
 
     public List<float> initValues;
 
@@ -19,26 +20,36 @@ public class DungeonMaster : MonoBehaviour {
 
     int pointerOnRoom = 0;
 
+    //Collected keys by player
+    int collectedKeys = 0;
+
     [SerializeField]
     public List<RoomComponent> rooms;
 
+    Text roomNrLabel;
+
     //Class which generatesfloor/walls/doors and glues them together
     RoomBuilder roomBuilder;
+
+    List<GameObject> activeMonsters;
 
 
 	// Use this for initialization
 	void Start () {
 
         roomBuilder = this.gameObject.GetComponent<RoomBuilder>();
-        sequence = new List<float>();
+        roomSequence = new List<float>();
         initValues = new List<float>();
         generator = this.GetComponent<RNGenerator>();
-        
+
+        roomNrLabel = GameObject.Find("RoomNumber").GetComponent<Text>();
+
+        activeMonsters = new List<GameObject>();
     
-        generator.init(playerSeed, sequence);
-        //numOfRooms = generator.getInitValues();
-        numOfRooms = 50;
-        Debug.Log("Anzahl der Räume in diesem Dungeon: " + numOfRooms);
+        generator.init(playerSeed, roomSequence);
+        numOfRooms = generator.getInitValues();
+        //numOfRooms = 50;
+        //Debug.Log("Anzahl der Räume in diesem Dungeon: " + numOfRooms);
         
         rooms = new List<RoomComponent>();
         getCompleteSequence();
@@ -55,6 +66,20 @@ public class DungeonMaster : MonoBehaviour {
 
         pointerOnRoom = 0;
         preProcessRooms();
+        lockDoors();
+
+
+        /*
+        foreach(RoomComponent room in rooms)
+        {
+            foreach(DoorTile door in room.getDoors())
+            {
+                if (door.locked)
+                    Debug.Log("YES");
+            }
+        } */
+
+
 
         foreach(RoomComponent room in rooms)
         {
@@ -72,7 +97,8 @@ public class DungeonMaster : MonoBehaviour {
         
         */
 
-        roomBuilder.buildRoom(rooms[pointerOnRoom], Enums.Direction.DEADEND);
+        roomBuilder.buildRoom(rooms[pointerOnRoom], Enums.Direction.DEADEND, generator, activeMonsters);
+        roomNrLabel.text = 0.ToString();
 
         /*
         foreach(RoomComponent room in rooms)
@@ -91,6 +117,60 @@ public class DungeonMaster : MonoBehaviour {
 
 	}
 
+
+    private void lockDoors()
+    {
+        int roomToLock = (int)generator.getNextNumber(0, numOfRooms);
+
+        while(roomToLock == 0)
+            roomToLock = (int)generator.getNextNumber(0, numOfRooms);
+
+
+        Debug.Log("Raum der abgeschlossen werden soll: " + roomToLock);
+
+
+        int direction = calculateDoorDirection(generator.getNextNumber(0, 100));
+
+
+        while (!rooms[roomToLock].hasNeighbour(direction))
+            direction = calculateDoorDirection(generator.getNextNumber(0, 100));
+
+        Debug.Log("Richtung die abgeschlossen werden soll: " + (Enums.Direction)direction);
+
+
+        //RoomComponent room = rooms[roomToLock].getNeighbour(direction);
+        RoomComponent room = rooms[roomToLock];
+
+        Debug.Log("Dieser Raum: " + room.getRoomNumber());
+
+
+        //Schlüssel darf nicht in einem der Räume hinter der Tür sein! DOETT FAGGOT
+        int keyRoom = (int)generator.getNextNumber(0, numOfRooms);
+        while (keyRoom == roomToLock || keyRoom == room.getRoomNumber() || keyRoom == 0)
+            keyRoom = (int)generator.getNextNumber(0, numOfRooms);
+
+
+        Debug.Log("Schlüssel ist in Raum: " + keyRoom);
+
+        /*
+        foreach (DoorTile door in rooms[r])
+        while(!rooms[roomToLock].getDoors().Contains(direction))
+            direction = calculateDoorDirection(generator.getNextNumber(0, 100));
+        */
+
+        DoorTile lockedDoor = DoorTile.CreateInstance<DoorTile>();
+        lockedDoor.direction = (Enums.Direction)direction;
+        lockedDoor.locked = true;
+
+        room.addDoor(lockedDoor);
+        GameObject key = Instantiate(Resources.Load("Key", typeof(GameObject))) as GameObject;
+        key.SetActive(false);
+        rooms[keyRoom].addKey(key); 
+
+        
+
+    }
+
     private void calculateDirections()
     {
         rooms[pointerOnRoom].Init(5, 7);
@@ -98,7 +178,7 @@ public class DungeonMaster : MonoBehaviour {
         int direction;
         for (int i = 0; i < maxDoors; i++)
         {
-            direction = calculateDoorDirection(sequence[4 * pointerOnRoom + i]);
+            direction = calculateDoorDirection(roomSequence[4 * pointerOnRoom + i]);
             rooms[pointerOnRoom].addDirection(direction);
         }
     }
@@ -155,11 +235,39 @@ public class DungeonMaster : MonoBehaviour {
                             }
                             
                         }
-
-                        //else-fall ohne i
                     }
                 }
             }
+        }
+        MonsterSpawner.calculateMonsters(rooms, generator);
+        foreach(RoomComponent room in rooms)
+        {
+            Debug.Log("Raum " + room.getRoomNumber() + " enthält " + room.getMonsterCount() + " Monster");
+            foreach(Enums.Monster monster in room.getMonsters())
+            {
+                Debug.Log(monster);
+            }
+        }
+        //cleanUp();
+    }
+
+    private void cleanUp()
+    {
+       foreach(RoomComponent room in rooms)
+        {
+
+            //Debug.Log(room.getRoomNumber());
+            //sroom.clearDirections();
+            //room.getDirections();
+            //List<DoorTile> doors = room.getDoors();
+
+            /*
+            foreach(DoorTile door in doors)
+            {
+                if (!list.Contains((int)door.direction))
+                    list.Add((int)door.direction);
+            }
+            */
         }
     }
 
@@ -239,7 +347,8 @@ public class DungeonMaster : MonoBehaviour {
         
         List<int> directions = rooms[pointerOnRoom].getDirections();
 
-        
+        if(rooms[pointerOnRoom].getKey())
+            rooms[pointerOnRoom].getKey().SetActive(false);
   
         switch(direction)
         {
@@ -266,8 +375,9 @@ public class DungeonMaster : MonoBehaviour {
         GameObject.Find("Player").transform.position = pos;
         //roomBuilder.saveRoom();
         
-        roomBuilder.buildRoom(rooms[pointerOnRoom], direction);
-        Debug.Log("Koordinaten für Raumnr.: " + rooms[pointerOnRoom].getRoomNumber() + " X|Y "+ rooms[pointerOnRoom].getXPos() + "|" + rooms[pointerOnRoom].getYPos());
+        roomBuilder.buildRoom(rooms[pointerOnRoom], direction, generator, activeMonsters);
+        roomNrLabel.text = rooms[pointerOnRoom].getRoomNumber().ToString();
+        //Debug.Log("Koordinaten für Raumnr.: " + rooms[pointerOnRoom].getRoomNumber() + " X|Y "+ rooms[pointerOnRoom].getXPos() + "|" + rooms[pointerOnRoom].getYPos());
     }
 
     private int calculateDoorDirection(float value)
