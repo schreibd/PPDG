@@ -26,6 +26,8 @@ public class RoomComponent {
 
     private int monsterCount;
 
+    private bool locked = false;
+
     private List<Enums.Monster> monsters = new List<Enums.Monster>();
 
 
@@ -33,6 +35,16 @@ public class RoomComponent {
     public int getMonsterCount()
     {
         return monsterCount;
+    }
+
+    public void setLock(bool locked)
+    {
+        this.locked = locked;
+    }
+
+    public bool getLock()
+    {
+        return locked;
     }
 
     public void setMonsterCount(int monsterCount)
@@ -43,6 +55,11 @@ public class RoomComponent {
     public void addMonster(Enums.Monster monster)
     {
         monsters.Add(monster);
+    }
+
+    public void removeDirection(int direction)
+    {
+        directions.Remove(direction);
     }
 
     public List<Enums.Monster> getMonsters()
@@ -136,7 +153,10 @@ public class RoomComponent {
 
     public void addDoor(DoorTile door)
     {
-            doors.Add(door);
+       // foreach (DoorTile temp in doors)
+            //if (temp.direction == door.direction)
+                //doors.Remove(temp);
+        doors.Add(door);
     }
 
     public List<int> getDirections()

@@ -8,7 +8,7 @@ public class PlayerComponent : MonoBehaviour {
     int keys;
 	// Use this for initialization
 	void Start () {
-        keys = 0;
+        keys = 1;
 	}
 	
 	// Update is called once per frame

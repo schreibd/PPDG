@@ -2,16 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+//Singleton concept to have just one instance of this class
+//Won't get destroyed (including Gameobject attached on) on loading new scene
+
 public class RNGenerator : MonoBehaviour{
 
-
-   /* private string[] rooms;
-    public int numOfRooms = 2;
-
-    public bool isFinished = false;
-    private string[] monsters;
-    private Random.State oldState; */
-
+    public static RNGenerator Instance { get; private set; }
+    // Use this for initialization
+    private void Awake()
+    {
+        if (!Instance)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+            Destroy(gameObject);
+    }
 
     private List<float> numberSequence;
     // Use this for initialization
@@ -27,7 +35,7 @@ public class RNGenerator : MonoBehaviour{
     //Can be used to get some random numbers for level instantiation
     public int getInitValues()
     {
-        int result = Mathf.RoundToInt(Random.Range(5, 9));
+        int result = Mathf.RoundToInt(Random.Range(5, 20));
         return result;
     }
 

@@ -38,7 +38,7 @@ public class Minimap : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
         canvas = GameObject.Find("Canvas");
-        minimap = canvas.transform.GetChild(0);
+        minimap = canvas.transform.GetChild(1);
 
         visitedRooms = new List<RoomComponent>();
 

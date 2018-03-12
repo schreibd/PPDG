@@ -78,12 +78,12 @@ public class RoomBuilder : Singleton<RoomBuilder> {
         currDoorMap.gameObject.AddComponent<DoorController>();
 
 
-        minimap = GameObject.Find("Canvas").transform.GetChild(0).GetComponent<Minimap>();
+        minimap = GameObject.Find("Canvas").transform.GetChild(1).GetComponent<Minimap>();
     }
 
 
 
-    public void buildRoom(RoomComponent roomData, Enums.Direction direction, RNGenerator generator, List<GameObject> activeMonsters)
+    public void buildRoom(RoomComponent roomData, Enums.Direction direction, List<GameObject> activeMonsters)
     {
         clearRoom();
         currentRoom = roomData;
@@ -92,9 +92,9 @@ public class RoomBuilder : Singleton<RoomBuilder> {
 
 
         // int cnt = 0; 
-        int lockedDoors = roomData.getDoors().Count;
+        //int lockedDoors = roomData.getDoors().Count;
         int cnt = 0;
-        while (cnt < 4)
+        while (cnt < roomData.getDirections().Count)
         {
             DoorTile door = DoorTile.CreateInstance<DoorTile>();
             door.sprite = doorTexture;
@@ -134,26 +134,33 @@ public class RoomBuilder : Singleton<RoomBuilder> {
         minimap.drawRoom(currentRoom, direction);
         //saveRoom();
 
-        spawnMonster(generator, activeMonsters);
+        spawnMonster(activeMonsters);
         
 
     }
 
-    public void spawnMonster(RNGenerator generator, List<GameObject> activeMonsters)
+    public void spawnMonster(List<GameObject> activeMonsters)
     {
         foreach (GameObject actM in activeMonsters)
             Destroy(actM);
-        //GameObject key = Instantiate(Resources.Load("Key", typeof(GameObject))) as GameObject;
+
         foreach(Enums.Monster monster in currentRoom.getMonsters())
         {
-            int x = MonsterSpawner.calcX(generator, width);
-            int y = MonsterSpawner.calcY(generator, height);
+            int x = MonsterSpawner.calcX(width);
+            int y = MonsterSpawner.calcY(height);
 
-            float posX = currFloorMap.CellToWorld(new Vector3Int(x, y, 0)).x;
-            float posY = currFloorMap.CellToWorld(new Vector3Int(x, y, 0)).y;
+            //Debug.Log("x: " + x + " y: " + y);
+            float posX = currFloorMap.CellToWorld(new Vector3Int(x, 0, 0)).x + 0.5f;
+            float posY = currFloorMap.CellToWorld(new Vector3Int(0, y, 0)).y;
 
             GameObject temp = Instantiate(Resources.Load(monster.ToString(), typeof(GameObject))) as GameObject;
-            temp.transform.position.Set(posX, posY, 0);
+
+            //Debug.Log("posx: " + posX + " posy: " + posY);
+            //Debug.Log("WorldPosition: " + temp.transform.position);
+            //Debug.Log("Root: " + temp.transform.root.gameObject.name);
+            temp.transform.localPosition = new Vector3(posX, posY, 0);
+
+            //Debug.Log(temp.transform.position);
 
             activeMonsters.Add(temp);
 
