@@ -312,6 +312,25 @@ public class RoomComponent {
              
     }
 
+    public bool hasFourNeighbours()
+    {
+        int cnt = 0;
+        bool result = false;
+        if (topNeighbour != null)
+            cnt++;
+        if (rightNeighbour != null)
+            cnt++;
+        if (bottomNeighbour != null)
+            cnt++;
+        if (leftNeihghbour != null)
+            cnt++;
+
+        if (cnt == 4)
+            result = true;
+
+        return result;
+    }
+
     public int getWidth()
     {
         return width;

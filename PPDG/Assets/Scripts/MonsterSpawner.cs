@@ -32,9 +32,11 @@ public static class MonsterSpawner{
         float rn = RNGenerator.Instance.getNextNumber(0, 100);
         int result = 0;
 
-        if (rn >= 10.0f && rn < 65.0f)
-            result = 1;
-        else if (rn >= 65.0f && rn < 90.0f)
+        if (rn >= .0f && rn < 50.0f)
+            result = 0;
+        if (rn >= 50.0f && rn < 75.0f)
+            result = 0;
+        else if (rn >= 75.0f && rn < 90.0f)
             result = 2;
         else if (rn >= 90.0f)
             result = 3;

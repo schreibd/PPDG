@@ -566,7 +566,7 @@ Prefab:
     - target: {fileID: 114463690981028090, guid: c2165d85b71da3a48be322e68bda5576,
         type: 2}
       propertyPath: playerSeed
-      value: blabla
+      value: dddddd
       objectReference: {fileID: 0}
     - target: {fileID: 114579578017565306, guid: c2165d85b71da3a48be322e68bda5576,
         type: 2}
@@ -727,6 +727,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fadingTime: 0.1
+--- !u!114 &528009619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 528009613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a11e9da7dba707e429c419dd7df8282f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &851196277
 GameObject:
   m_ObjectHideFlags: 0

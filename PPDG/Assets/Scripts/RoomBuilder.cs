@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-[Prefab("Prefabs/Singletons/DungeonManager", true)]
-public class RoomBuilder : Singleton<RoomBuilder> {
 
-    public static RoomBuilder instance = null;
+public class RoomBuilder : MonoBehaviour{
+
+    public static RoomBuilder Instance { get; private set; }
 
     public Tilemap currFloorMap;
 
@@ -49,17 +49,18 @@ public class RoomBuilder : Singleton<RoomBuilder> {
     // Use this for initialization 
     void Awake () {
 
-         if (instance == null)
+         if (Instance == null)
         {
-            instance = this;
+            Instance = this;
         }
             
-        else if (instance != gameObject)
+        else if (Instance != gameObject)
         {
             Destroy(gameObject);
         }
 
         builtRooms = new List<int>();
+
         grid = GameObject.Find("Grid");
 
         currFloorMap = grid.transform.GetChild(0).GetComponent<Tilemap>();
@@ -239,11 +240,6 @@ public class RoomBuilder : Singleton<RoomBuilder> {
 
     void buildDoors(DoorTile door)
     {
-        /* Matrix4x4 identity = Matrix4x4.identity;
-         Quaternion identityQ = Quaternion.identity;
-         identity = Matrix4x4.Rotate(identityQ);
-         door.transform *= identity;
-         */
         if (!currentRoom.hasNeighbour((int)door.direction))
             return;
 
@@ -256,25 +252,16 @@ public class RoomBuilder : Singleton<RoomBuilder> {
                 break;
             case Enums.Direction.EAST:
                 rotateDoor(door);
-                //rotation = Quaternion.Euler(0, 0, -90.0f);
-                //rotationM = Matrix4x4.Rotate(rotation);
-                //door.transform *= rotationM;
                 currWallMap.SetTile(new Vector3Int(width, height / 2, 0), null);
                 currDoorMap.SetTile(new Vector3Int(width, height / 2, 0), door);
                 break;
             case Enums.Direction.SOUTH:
                 rotateDoor(door);
-                //rotation = Quaternion.Euler(0, 0, 180.0f);
-                //rotationM = Matrix4x4.Rotate(rotation);
-                //door.transform *= rotationM;
                 currWallMap.SetTile(new Vector3Int((width / 2), -1, 0), null);
                 currDoorMap.SetTile(new Vector3Int((width / 2), -1, 0), door);
                 break;
             case Enums.Direction.WEST:
                 rotateDoor(door);
-                //rotation = Quaternion.Euler(0, 0, 90.0f);
-                //rotationM = Matrix4x4.Rotate(rotation);
-                //door.transform *= rotationM;
                 currWallMap.SetTile(new Vector3Int(-1, height / 2, 0), null);
                 currDoorMap.SetTile(new Vector3Int(-1, height / 2, 0), door);
                 break;
