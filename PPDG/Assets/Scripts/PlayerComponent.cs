@@ -9,11 +9,7 @@ public class PlayerComponent : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         keys = 1;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+      //keys = 0;
 	}
 
     public int getKeys()
@@ -32,8 +28,7 @@ public class PlayerComponent : MonoBehaviour {
     }
 
     private void OnTriggerStay2D(Collider2D collision)
-    {
-        
+    { 
         if(collision.CompareTag("Key"))
         {
             incrKeys();

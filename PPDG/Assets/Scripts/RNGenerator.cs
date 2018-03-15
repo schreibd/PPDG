@@ -38,12 +38,25 @@ public class RNGenerator : MonoBehaviour{
         float min = 5;
         float max = 7;
         float c = 1.5f;
+
         float minimum = min * (c * (level-1)) + min;
         float maximum = max * (c * (level-1)) + max;
-        Debug.Log("Minimum: " + minimum);
-        Debug.Log("Maximum: " + maximum);
+
         int result = Mathf.RoundToInt(Random.Range(minimum, maximum));
-        Debug.Log("Result: " + result);
+
+        return result;
+    }
+
+    public List<float> getRoomSequence(int numOfRooms)
+    {
+        List<float> result = new List<float>();
+
+        for(int i = 0; i < numOfRooms * 4; i++)
+        {
+            result.Add(getNextNumber(0, 100));
+        }
+
+
         return result;
     }
 
@@ -52,10 +65,5 @@ public class RNGenerator : MonoBehaviour{
         float value = Random.Range(min, max);
         numberSequence.Add(value);
         return value;
-    }
-
-    public List<float> getSequence()
-    {
-        return numberSequence;
     }
 }

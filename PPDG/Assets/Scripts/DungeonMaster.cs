@@ -5,16 +5,13 @@ using UnityEngine.UI;
 
 public class DungeonMaster : MonoBehaviour {
 
+
+    //We use the hash code of this string as seed in our RNGenerator
     [SerializeField]
     private string playerSeed;
 
-    //private RNGenerator generator;
-
+    //Stores all RoomComponents
     public List<float> roomSequence;
-
-    public List<float> initValues;
-
-    bool isFinished;
 
     int numOfRooms;
 
@@ -28,35 +25,27 @@ public class DungeonMaster : MonoBehaviour {
 
     Text roomNrLabel;
 
-    //Class which generatesfloor/walls/doors and glues them together
-    RoomBuilder roomBuilder;
-
     List<GameObject> activeMonsters;
 
 
 	// Use this for initialization
 	void Start () {
 
-        roomBuilder = this.gameObject.GetComponent<RoomBuilder>();
-        roomSequence = new List<float>();
-        initValues = new List<float>();
-       // generator = this.GetComponent<RNGenerator>();
-
         roomNrLabel = GameObject.Find("RoomNumber").GetComponent<Text>();
 
         activeMonsters = new List<GameObject>();
-    
+
+        //Set seed as state in our RNGenerator
         RNGenerator.Instance.init(playerSeed, roomSequence);
 
         //Gets the amount of rooms we want to generate
-        numOfRooms = RNGenerator.Instance.getInitValues(2);
+        numOfRooms = RNGenerator.Instance.getInitValues(1);
 
-        //Debug.Log("Anzahl der Räume in diesem Dungeon: " + numOfRooms);
-        
         rooms = new List<RoomComponent>();
 
         //Gets a sequence of random numbers we need to generate the rooms and their directions
-        getCompleteSequence();
+        roomSequence = RNGenerator.Instance.getRoomSequence(numOfRooms);
+       
 
         for (int i = 0; i < numOfRooms; i++)
         {
@@ -70,70 +59,21 @@ public class DungeonMaster : MonoBehaviour {
             pointerOnRoom++;
         }
 
+        //Pointer which helps us to iterate over the roomSequence
         pointerOnRoom = 0;
+
         preProcessRooms();
-        //Debug.Log(rooms[4].getRoomNumber());
-        //Debug.Log(rooms[4].getDoors().Count);
 
         ContentCreator.Instance.lockDoors(rooms);
+        MonsterSpawner.calculateMonsters(rooms);
 
-
-
-        /*
-        foreach(RoomComponent room in rooms)
-        {
-            foreach(DoorTile door in room.getDoors())
-            {
-                if (door.locked)
-                    Debug.Log("YES");
-            }
-        } */
-
-     
-
-        foreach (RoomComponent room in rooms)
-        {
-
-           //Debug.Log("Room " + room.getRoomNumber() + " Richtungen: " + (Enums.Direction)room.getDirections()[0] + " " + (Enums.Direction)room.getDirections()[1] + " " + (Enums.Direction)room.getDirections()[2] + " " + (Enums.Direction)room.getDirections()[3]);
-            //Debug.Log("Room " + room.getRoomNumber() + "X/Y-Koordinaten: " + room.getXPos() + "/" + room.getYPos());
-        }
-        /*
-        Debug.Log("Room 0: " + " Richtungen: " +(Enums.Direction) rooms[0].getDirections()[0] + " " +(Enums.Direction) rooms[0].getDirections()[1] + " " + (Enums.Direction)rooms[0].getDirections()[2] + " " + (Enums.Direction)rooms[0].getDirections()[3]);
-        Debug.Log("Room 1: " + " Richtungen: " +(Enums.Direction) rooms[1].getDirections()[0] + " " +(Enums.Direction) rooms[1].getDirections()[1] + " " + (Enums.Direction)rooms[1].getDirections()[2] + " " + (Enums.Direction)rooms[1].getDirections()[3]);
-        Debug.Log("Room 2: " + " Richtungen: " +(Enums.Direction) rooms[2].getDirections()[0] + " " +(Enums.Direction) rooms[2].getDirections()[1] + " " + (Enums.Direction)rooms[2].getDirections()[2] + " " + (Enums.Direction)rooms[2].getDirections()[3]);
-        Debug.Log("Room 3: " + " Richtungen: " +(Enums.Direction) rooms[3].getDirections()[0] + " " +(Enums.Direction) rooms[3].getDirections()[1] + " " + (Enums.Direction)rooms[3].getDirections()[2] + " " + (Enums.Direction)rooms[3].getDirections()[3]);
-        Debug.Log("Room 4: " + " Richtungen: " +(Enums.Direction) rooms[4].getDirections()[0] + " " +(Enums.Direction) rooms[4].getDirections()[1] + " " + (Enums.Direction)rooms[4].getDirections()[2] + " " + (Enums.Direction)rooms[4].getDirections()[3]);
-        Debug.Log("Room 5: " + " Richtungen: " +(Enums.Direction) rooms[5].getDirections()[0] + " " +(Enums.Direction) rooms[5].getDirections()[1] + " " + (Enums.Direction)rooms[5].getDirections()[2] + " " + (Enums.Direction)rooms[5].getDirections()[3]);
-        Debug.Log("Room 6: " + " Richtungen: " +(Enums.Direction) rooms[6].getDirections()[0] + " " + (Enums.Direction)rooms[6].getDirections()[1] + " " + (Enums.Direction)rooms[6].getDirections()[2] + " " + (Enums.Direction)rooms[6].getDirections()[3]);  
-        
-        */
-
-
-        roomBuilder.buildRoom(rooms[pointerOnRoom], Enums.Direction.DEADEND, activeMonsters);
+        RoomBuilder.Instance.buildRoom(rooms[pointerOnRoom], Enums.Direction.DEADEND, activeMonsters);
         roomNrLabel.text = 0.ToString();
-
-       
-
-        /*
-        foreach(RoomComponent room in rooms)
-        {
-            Debug.Log("Room: " + room.getRoomNumber() + " Koordinaten: X " + room.getXPos() + " / Y " + room.getYPos());
-        }
-
-        */
-
-        // Debug.Log(rooms[10].bottomNeighbour.getRoomNumber());
-
-
-
-
-
-
     }
 
     
 
-        private void calculateDirections()
+    private void calculateDirections()
     {
         rooms[pointerOnRoom].Init(5, 7);
         int maxDoors = 4;
@@ -142,22 +82,24 @@ public class DungeonMaster : MonoBehaviour {
         for (int i = 0; i < maxDoors; i++)
         {
             direction = calculateDoorDirection(roomSequence[4 * pointerOnRoom + i]);
-            //Debug.Log("Raum: " + rooms[pointerOnRoom].getRoomNumber() + " Richtung: " + (Enums.Direction)direction);
             rooms[pointerOnRoom].addDirection(direction);
         }
     }
 
-    //Change method so room order is random and not N->E->S->W
-
+    
+    //Sets neighbours for every room with help of the random number sequence we created on start
+    //Calculates positions for every room on our minimap
     void preProcessRooms()
-    {
-        
+    {   
         int number = 0;
+
+        //Iterates over all rooms
         for (int i = 0; i < numOfRooms; i++)
         {
+            //Iterates over every possible direction (see enums)
             for (int j = 1; j <= 4; j++)
             {
-                
+                //Randomly chooses the direction of the next room
                 int direction = calculateDoorDirection(RNGenerator.Instance.getNextNumber(0, 100));
                 if (number < numOfRooms - 1 && rooms[i].getDirections().Contains(direction))
                 {
@@ -169,15 +111,15 @@ public class DungeonMaster : MonoBehaviour {
                             rooms[number + 1].setRoomNumber(number + 1);
                             rooms[i].setPosition(0, 0);
                             setNeighbourhood(i, rooms[number + 1], (Enums.Direction)direction);
-                            int tempY = calcYPos(rooms[i], (Enums.Direction)direction);
-                            int tempX = calcXPos(rooms[i], (Enums.Direction)direction);
+                            int tempY = Minimap.Instance.calcYPos(rooms[i], (Enums.Direction)direction);
+                            int tempX = Minimap.Instance.calcXPos(rooms[i], (Enums.Direction)direction);
                             rooms[number + 1].setPosition(tempX, tempY);
                             number += 1;
                         }
                         else
                         {
-                            int tempY = calcYPos(rooms[i], (Enums.Direction)direction);
-                            int tempX = calcXPos(rooms[i], (Enums.Direction)direction);
+                            int tempY = Minimap.Instance.calcYPos(rooms[i], (Enums.Direction)direction);
+                            int tempX = Minimap.Instance.calcXPos(rooms[i], (Enums.Direction)direction);
                            
                             
                             if(!roomExists(tempX, tempY))
@@ -198,17 +140,11 @@ public class DungeonMaster : MonoBehaviour {
                 }
                 
             }
-            //Debug.Log("Raum: " + rooms[i].getRoomNumber() + " xpos: " + rooms[i].getXPos() + " ypos: " + rooms[i].getYPos());
-            foreach (Enums.Direction direction in rooms[i].getDirections())
-            {
-                Debug.Log("Raum: " + rooms[i] + " Richtung: " + direction);
-            }
         }
-        MonsterSpawner.calculateMonsters(rooms);
-
         cleanUp();
     }
 
+    //Gets rid of directions we don't need (for every room)
     private void cleanUp()
     {
        foreach(RoomComponent room in rooms)
@@ -221,14 +157,6 @@ public class DungeonMaster : MonoBehaviour {
             }
             room.setDirections(newDirections);
         }
-       /*
-       foreach(RoomComponent room in rooms)
-        {
-            Debug.Log(room.getDirections().Count);
-            foreach (int direction in room.getDirections())
-                Debug.Log((Enums.Direction)direction);
-        } */
-        
     }
 
     void setNeighbourhood(int i, RoomComponent neighbour, Enums.Direction direction)
@@ -257,20 +185,10 @@ public class DungeonMaster : MonoBehaviour {
                 break;
         }
     }
-
-
-    private void getCompleteSequence()
-    {    
-        for(int i = 0; i < numOfRooms * 4; i++)
-        {
-            RNGenerator.Instance.getNextNumber(0, 100);
-        }
-    }
   
     public void moveForward(Vector3Int pos, Enums.Direction direction)
     {
         RoomInterpolator.Instance.activate();
- 
         
         List<int> directions = rooms[pointerOnRoom].getDirections();
 
@@ -297,14 +215,11 @@ public class DungeonMaster : MonoBehaviour {
                 break;  
         } 
 
-        //calculateDirections();
         GameObject.Find("Player").transform.position = pos;
-        //roomBuilder.saveRoom();
         
-        
-        roomBuilder.buildRoom(rooms[pointerOnRoom], direction, activeMonsters);
+        RoomBuilder.Instance.buildRoom(rooms[pointerOnRoom], direction, activeMonsters);
+
         roomNrLabel.text = rooms[pointerOnRoom].getRoomNumber().ToString();
-        //Debug.Log("Koordinaten für Raumnr.: " + rooms[pointerOnRoom].getRoomNumber() + " X|Y "+ rooms[pointerOnRoom].getXPos() + "|" + rooms[pointerOnRoom].getYPos());
     } 
 
     private int calculateDoorDirection(float value)
@@ -330,7 +245,6 @@ public class DungeonMaster : MonoBehaviour {
         bool result = false;
         foreach(RoomComponent room in rooms)
         {
-                //Debug.Log("Raumnummer: " + room.getRoomNumber() + " " + room.getXPos() + "|" + room.getYPos() + " Targetnummer: " + target.getRoomNumber() + " " + target.getXPos() + "|" + target.getYPos());
                 if (room.getXPos() == x && room.getYPos() == y)
                 {    
                     result = true;
@@ -340,46 +254,5 @@ public class DungeonMaster : MonoBehaviour {
         return result;
     }
 
-    private int calcXPos(RoomComponent room, Enums.Direction direction)
-    {
-        int xPos = 0;
-        switch (direction)
-        {
-            case Enums.Direction.NORTH:
-                xPos = room.getXPos();
-                break;
-            case Enums.Direction.EAST:
-                xPos = room.getXPos()+1;
-                break;
-            case Enums.Direction.SOUTH:
-                xPos = room.getXPos();
-                break;
-            case Enums.Direction.WEST:
-                xPos = room.getXPos()-1;
-                break;
-        }
-        return xPos;
-    }
-
-
-    private int calcYPos(RoomComponent room, Enums.Direction direction)
-    {
-        int yPos = 0;
-        switch (direction)
-        {
-            case Enums.Direction.NORTH:
-                yPos = room.getYPos()+1;
-                break;
-            case Enums.Direction.EAST:
-                yPos = room.getYPos();
-                break;
-            case Enums.Direction.SOUTH:
-                yPos = room.getYPos()-1;
-                break;
-            case Enums.Direction.WEST:
-                yPos = room.getYPos();
-                break;
-        }
-        return yPos;
-    }
+    
 }

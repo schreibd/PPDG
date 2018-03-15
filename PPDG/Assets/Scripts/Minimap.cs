@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class Minimap : MonoBehaviour {
 
+    public static Minimap Instance { get; private set; }
     public GameObject canvas;
     public Transform minimap;
     public List<RoomComponent> visitedRooms;
@@ -37,18 +38,22 @@ public class Minimap : MonoBehaviour {
 
 	// Use this for initialization
 	void Awake () {
-        canvas = GameObject.Find("Canvas");
+
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+
+        else if (Instance != gameObject)
+        {
+            Destroy(gameObject);
+        }
+
+        canvas = this.gameObject.transform.parent.gameObject; 
+
         minimap = canvas.transform.GetChild(1);
 
         visitedRooms = new List<RoomComponent>();
-
-        
-
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
 	}
 
     private void OnGUI()
@@ -73,18 +78,7 @@ public class Minimap : MonoBehaviour {
             
             else
                 GUI.DrawTexture(room.getMinimapPosition(), inactiveRoom);
-            //newRoom = false;
         }
-        /*
-        Rect doorPosition = new Rect(roomPosition.x, roomPosition.y, width / 2, height / 2);
-        doorPosition.x += doorPosition.width / 2;
-        doorPosition.y -= doorPosition.height / 2;
-        Debug.Log("Rect-Position: " + roomPosition.position);
-        
-        
-        GUI.DrawTexture(doorPosition, miniDoor);
-        */
-
     }
 
 
@@ -94,7 +88,6 @@ public class Minimap : MonoBehaviour {
         float localY = 0.0f;
 
         Rect roomPosition;
-
 
         if (visitedRooms.Count == 0)
         {
@@ -144,15 +137,48 @@ public class Minimap : MonoBehaviour {
         }
 
         currentRoom = roomData;
-        foreach(Enums.Direction direction in currentRoom.getDirections())
-        {
+    }
 
+    public int calcXPos(RoomComponent room, Enums.Direction direction)
+    {
+        int xPos = 0;
+        switch (direction)
+        {
+            case Enums.Direction.NORTH:
+                xPos = room.getXPos();
+                break;
+            case Enums.Direction.EAST:
+                xPos = room.getXPos() + 1;
+                break;
+            case Enums.Direction.SOUTH:
+                xPos = room.getXPos();
+                break;
+            case Enums.Direction.WEST:
+                xPos = room.getXPos() - 1;
+                break;
         }
+        return xPos;
     }
 
 
-    private void drawDoor()
+    public int calcYPos(RoomComponent room, Enums.Direction direction)
     {
-
+        int yPos = 0;
+        switch (direction)
+        {
+            case Enums.Direction.NORTH:
+                yPos = room.getYPos() + 1;
+                break;
+            case Enums.Direction.EAST:
+                yPos = room.getYPos();
+                break;
+            case Enums.Direction.SOUTH:
+                yPos = room.getYPos() - 1;
+                break;
+            case Enums.Direction.WEST:
+                yPos = room.getYPos();
+                break;
+        }
+        return yPos;
     }
 }

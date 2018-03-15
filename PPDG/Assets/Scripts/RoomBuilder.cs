@@ -41,7 +41,7 @@ public class RoomBuilder : MonoBehaviour{
 
     List<int> builtRooms;
 
-    int numOfRooms = 1;
+    int numOfRooms;
 
     RoomComponent currentRoom;
 
