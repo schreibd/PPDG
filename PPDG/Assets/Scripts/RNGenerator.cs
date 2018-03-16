@@ -21,14 +21,13 @@ public class RNGenerator : MonoBehaviour{
             Destroy(gameObject);
     }
 
-    private List<float> numberSequence;
+
     // Use this for initialization
 
     //Sets seed as state for rn generation
-    public void init(string input, List<float> sequence)
+    public void init(string input)
     {
         Random.InitState(input.GetHashCode());
-        numberSequence = sequence;
     }
 
 
@@ -52,6 +51,7 @@ public class RNGenerator : MonoBehaviour{
         List<float> result = new List<float>();
 
         for(int i = 0; i < numOfRooms * 4; i++)
+        //for (int i = 0; i < numOfRooms; i++)
         {
             result.Add(getNextNumber(0, 100));
         }
@@ -63,7 +63,6 @@ public class RNGenerator : MonoBehaviour{
     public float getNextNumber(float min, float max)
     {
         float value = Random.Range(min, max);
-        numberSequence.Add(value);
         return value;
     }
 }

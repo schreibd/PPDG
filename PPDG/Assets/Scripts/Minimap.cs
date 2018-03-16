@@ -19,6 +19,10 @@ public class Minimap : MonoBehaviour {
     Texture miniRoom;
 
     [SerializeField]
+    Texture blankRoom;
+
+
+    [SerializeField]
     Texture miniDoor;
 
     [SerializeField]
@@ -35,6 +39,8 @@ public class Minimap : MonoBehaviour {
 
     public Enums.Direction fromDirection;
 
+    bool clear = false;
+
 
 	// Use this for initialization
 	void Awake () {
@@ -44,41 +50,80 @@ public class Minimap : MonoBehaviour {
             Instance = this;
         }
 
-        else if (Instance != gameObject)
-        {
-            Destroy(gameObject);
-        }
 
         canvas = this.gameObject.transform.parent.gameObject; 
 
         minimap = canvas.transform.GetChild(1);
 
         visitedRooms = new List<RoomComponent>();
+
 	}
+
+    public void clearMinimap()
+    {
+        clear = true;
+
+        /*
+        GameObject oldCanvas = canvas;
+        canvas = Instantiate(Resources.Load("Canvas", typeof(GameObject))) as GameObject;
+        
+        canvas.name = "Canvas";
+        float x = oldCanvas.transform.GetChild(1).position.x;
+        float y = oldCanvas.transform.GetChild(1).position.y;
+        float width = canvas.transform.GetChild(1).GetComponent<RectTransform>().rect.width;
+        float height = canvas.transform.GetChild(1).GetComponent<RectTransform>().rect.height;
+        Destroy(oldCanvas);
+        Rect rect = new Rect(new Vector2(x, y), new Vector2(width, height));
+        GUI.DrawTexture(rect, miniRoom);
+        */
+    }
+
+    public void clearScreen(bool clear)
+    {
+        this.clear = clear;
+        visitedRooms = new List<RoomComponent>();
+        //GUI.DrawTexture
+    }
 
     private void OnGUI()
     {
-        foreach(RoomComponent room in visitedRooms)
+        /*
+        if(clear)
         {
-            if (room == currentRoom)
+            foreach (RoomComponent room in visitedRooms)
             {
-                float height = room.getMinimapPosition().height / 2;
-                float width = room.getMinimapPosition().width / 2;
-
+                Debug.Log("Ohjaaaaa");
                 Rect position = room.getMinimapPosition();
-                position.x += width / 2;
-                position.y += height / 2;
-
-                position.height = height;
-                position.width = width;
-                GUI.DrawTexture(room.getMinimapPosition(), miniRoom);
-                GUI.DrawTexture(position, pirateIcon);
+                GUI.DrawTexture(room.getMinimapPosition(), blankRoom);
             }
-                
-            
-            else
-                GUI.DrawTexture(room.getMinimapPosition(), inactiveRoom);
+            clear = false;
+        }*/
+        if(!clear)
+        {
+            foreach (RoomComponent room in visitedRooms)
+            {
+                if (room == currentRoom)
+                {
+                    float height = room.getMinimapPosition().height / 2;
+                    float width = room.getMinimapPosition().width / 2;
+
+                    Rect position = room.getMinimapPosition();
+                    position.x += width / 2;
+                    position.y += height / 2;
+
+                    position.height = height;
+                    position.width = width;
+                    GUI.DrawTexture(room.getMinimapPosition(), miniRoom);
+                    GUI.DrawTexture(position, pirateIcon);
+                }
+
+
+                else
+                    GUI.DrawTexture(room.getMinimapPosition(), inactiveRoom);
+            }
         }
+
+        
     }
 
 

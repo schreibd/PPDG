@@ -20,6 +20,8 @@ public class DungeonMaster : MonoBehaviour {
     //Collected keys by player
     int collectedKeys = 0;
 
+    int level = 1;
+
     [SerializeField]
     public List<RoomComponent> rooms;
 
@@ -36,22 +38,81 @@ public class DungeonMaster : MonoBehaviour {
         activeMonsters = new List<GameObject>();
 
         //Set seed as state in our RNGenerator
-        RNGenerator.Instance.init(playerSeed, roomSequence);
+        RNGenerator.Instance.init(playerSeed);
 
         //Gets the amount of rooms we want to generate
-        numOfRooms = RNGenerator.Instance.getInitValues(1);
+        numOfRooms = RNGenerator.Instance.getInitValues(level);
 
         rooms = new List<RoomComponent>();
 
         //Gets a sequence of random numbers we need to generate the rooms and their directions
         roomSequence = RNGenerator.Instance.getRoomSequence(numOfRooms);
-       
+
+        start();
+        while (!isValidDungeon())
+            start();
+        
+        ContentCreator.Instance.lockDoors(rooms);
+        MonsterSpawner.calculateMonsters(rooms);
+
+        pointerOnRoom = 0;
+        RoomBuilder.Instance.buildRoom(rooms[pointerOnRoom], Enums.Direction.DEADEND, activeMonsters);
+        roomNrLabel.text = 0.ToString();
+
+    }
+
+    public void nextLevel()
+    {
+        pointerOnRoom = 0;
+        level++;
+
+        RoomBuilder.Instance.clearBuilderData();
+
+        foreach (GameObject monster in activeMonsters)
+            Destroy(monster);
+
+        Minimap.Instance.clearMinimap();
+        RoomInterpolator.Instance.activate();
+        activeMonsters = new List<GameObject>();
+        numOfRooms = RNGenerator.Instance.getInitValues(level);
+        rooms = new List<RoomComponent>();
+
+        roomSequence = RNGenerator.Instance.getRoomSequence(numOfRooms);
+
+        Minimap.Instance.clearScreen(false);
+
+        start();
+        while (!isValidDungeon())
+            start();
+
+        ContentCreator.Instance.lockDoors(rooms);
+        MonsterSpawner.calculateMonsters(rooms);
+
+        pointerOnRoom = 0;
+        RoomBuilder.Instance.buildRoom(rooms[pointerOnRoom], Enums.Direction.DEADEND, activeMonsters);
+        roomNrLabel.text = 0.ToString();
+
+    }
+
+    
+    private bool isValidDungeon()
+    {
+        bool result = true;
+        if (rooms[rooms.Count - 1].getRoomNumber() == 0)
+            result = false;
+        return result;
+
+    } 
+
+    void start()
+    {
+        rooms = new List<RoomComponent>();
 
         for (int i = 0; i < numOfRooms; i++)
         {
             rooms.Add(new RoomComponent());
         }
- 
+
 
         for (int j = 0; j < numOfRooms; j++)
         {
@@ -59,23 +120,19 @@ public class DungeonMaster : MonoBehaviour {
             pointerOnRoom++;
         }
 
-        //Pointer which helps us to iterate over the roomSequence
         pointerOnRoom = 0;
 
+        //Pointer which helps us to iterate over the roomSequence
+        //pointerOnRoom = 0;
+
         preProcessRooms();
-
-        ContentCreator.Instance.lockDoors(rooms);
-        MonsterSpawner.calculateMonsters(rooms);
-
-        RoomBuilder.Instance.buildRoom(rooms[pointerOnRoom], Enums.Direction.DEADEND, activeMonsters);
-        roomNrLabel.text = 0.ToString();
+        
     }
-
     
-
     private void calculateDirections()
     {
         rooms[pointerOnRoom].Init(5, 7);
+        rooms[pointerOnRoom].setDirections(new List<int>());
         int maxDoors = 4;
         //int maxDoors = calculateDoorDirection(RNGenerator.Instance.getNextNumber(0,100));
         int direction;
@@ -84,9 +141,8 @@ public class DungeonMaster : MonoBehaviour {
             direction = calculateDoorDirection(roomSequence[4 * pointerOnRoom + i]);
             rooms[pointerOnRoom].addDirection(direction);
         }
-    }
-
-    
+    } 
+  
     //Sets neighbours for every room with help of the random number sequence we created on start
     //Calculates positions for every room on our minimap
     void preProcessRooms()
@@ -131,7 +187,7 @@ public class DungeonMaster : MonoBehaviour {
                             }
                            else
                             {
-                                //Ey hier gibts Probleme bei der Logik teilweise
+                                start();
                             }
                             
                         }
@@ -142,7 +198,7 @@ public class DungeonMaster : MonoBehaviour {
             }
         }
         cleanUp();
-    }
+    } 
 
     //Gets rid of directions we don't need (for every room)
     private void cleanUp()
@@ -188,7 +244,7 @@ public class DungeonMaster : MonoBehaviour {
   
     public void moveForward(Vector3Int pos, Enums.Direction direction)
     {
-        RoomInterpolator.Instance.activate();
+        //RoomInterpolator.Instance.activate();
         
         List<int> directions = rooms[pointerOnRoom].getDirections();
 

@@ -82,6 +82,11 @@ public class RoomBuilder : MonoBehaviour{
         minimap = GameObject.Find("Canvas").transform.GetChild(1).GetComponent<Minimap>();
     }
 
+    public void clearBuilderData()
+    {
+        builtRooms = new List<int>();
+    }
+
 
 
     public void buildRoom(RoomComponent roomData, Enums.Direction direction, List<GameObject> activeMonsters)

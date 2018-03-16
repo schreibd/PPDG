@@ -41,6 +41,11 @@ public class InputSystem : MonoBehaviour {
             animator.SetBool("attacking", true);
         }
 
+        if(Input.GetKeyDown(KeyCode.O))
+        {
+            GameObject.Find("DungeonManager").GetComponent<DungeonMaster>().nextLevel();
+        }
+
         if(animator.GetCurrentAnimatorStateInfo(0).IsName("Attack R") || animator.GetCurrentAnimatorStateInfo(0).IsName("Attack L"))
         {
             animator.SetBool("attacking", false);

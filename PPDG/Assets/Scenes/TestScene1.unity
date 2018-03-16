@@ -146,10 +146,10 @@ RectTransform:
   m_Father: {fileID: 221008768}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -257.4, y: -254.93}
-  m_SizeDelta: {x: 498.9, y: 488.1}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -286.8, y: 1.5}
+  m_SizeDelta: {x: 557.8, y: 890.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &49360448
 MonoBehaviour:
@@ -200,6 +200,7 @@ MonoBehaviour:
   width: 42
   height: 30
   miniRoom: {fileID: 2800000, guid: d335df48550c28e4c965c06cb51db83e, type: 3}
+  blankRoom: {fileID: 2800000, guid: 0cd5d56f8834940418e99e9b73b08555, type: 3}
   miniDoor: {fileID: 2800000, guid: 99ea5b23a24e5824b9e026468775be0d, type: 3}
   inactiveRoom: {fileID: 2800000, guid: 27a6e8be8d7fa2d46abc942eeda71232, type: 3}
   pirateIcon: {fileID: 2800000, guid: 13c1b2a26c625704fa3f582a7edcd2a2, type: 3}
@@ -566,7 +567,7 @@ Prefab:
     - target: {fileID: 114463690981028090, guid: c2165d85b71da3a48be322e68bda5576,
         type: 2}
       propertyPath: playerSeed
-      value: dddddd
+      value: brbrbr
       objectReference: {fileID: 0}
     - target: {fileID: 114579578017565306, guid: c2165d85b71da3a48be322e68bda5576,
         type: 2}

@@ -20,8 +20,8 @@ public class RoomInterpolator : MonoBehaviour {
     private void Awake () {
         if (!Instance)
         {
-            Instance = this;
             fadeTexture = GameObject.Find("Canvas").transform.GetChild(0).GetComponent<Image>();
+            Instance = this;
             fadeTexture.rectTransform.sizeDelta = new Vector2(Screen.width, Screen.height);
             fadeTexture.color = Color.black;
             DontDestroyOnLoad(gameObject);
