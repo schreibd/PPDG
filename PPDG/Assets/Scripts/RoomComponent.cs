@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class RoomComponent {
 
-    int width;
-    int height;
-    List<DoorTile> doors = new List<DoorTile>();
+    private int width;
+    private int height;
+    private List<DoorTile> doors = new List<DoorTile>();
     private GameObject key;
-    int numOfDoors;
-    int xPos;
-    int yPos;
+    private int numOfDoors;
+    private int xPos;
+    private int yPos;
 
-    List<int> directions = new List<int>();
+    private List<int> directions = new List<int>();
 
     public RoomComponent leftNeihghbour;
     public RoomComponent topNeighbour;
@@ -21,7 +21,6 @@ public class RoomComponent {
 
     private Rect minimapPosition;
 
-    [SerializeField]
     private int number;
 
     private int monsterCount;
@@ -30,140 +29,88 @@ public class RoomComponent {
 
     private List<Enums.Monster> monsters = new List<Enums.Monster>();
 
-
-
-    public int getMonsterCount()
+    //Initialzes datastructure for room
+    public void Init(int width, int height)
     {
-        return monsterCount;
+        this.width = width;
+        this.height = height;
     }
 
-    public void setLock(bool locked)
-    {
-        this.locked = locked;
-    }
-
-    public bool getLock()
-    {
-        return locked;
-    }
-
-    public void setMonsterCount(int monsterCount)
-    {
-        this.monsterCount = monsterCount;
-    }
-
-    public void addMonster(Enums.Monster monster)
-    {
-        monsters.Add(monster);
-    }
-
-    public void removeDirection(int direction)
-    {
-        directions.Remove(direction);
-    }
-
-    public List<Enums.Monster> getMonsters()
-    {
-        return monsters;
-    }
-
-
-    // Use this for initialization
-    void Start() {
-
-    }
-
+    //Checks if room contains parameterized direction
     public bool containsDirection(Enums.Direction direction)
     {
         return directions.Contains((int)direction);
     }
 
-    // Update is called once per frame
-    void Update() {
-
-    }
-
+    //Sets a new list of directions
     public void setDirections(List<int> newDirections)
     {
         directions = newDirections;
     }
 
+    //Sets new position for minimap
     public void setMinimapPosition(Rect position)
     {
         minimapPosition = position;
     }
 
+    //Gets the minimap position
     public Rect getMinimapPosition()
     {
         return minimapPosition;
     }
 
-    /*public void killDoor(int direction)
-    {
-        foreach(DoorTile door in doors)
-        {
-            if((int)door.direction == direction)
-            {
-                doors.Remove(door);
-                directions.Remove(direction);
-            }
-        }
-    } */
-
+    //Sets x and y coordinates
     public void setPosition(int x, int y)
     {
         xPos = x;
         yPos = y;
     }
 
+    //Gets x position
     public int getXPos()
     {
         return xPos;
     }
 
+    //Gets y position
     public int getYPos()
     {
         return yPos;
     }
 
-
-
-    //Initialzes datastructure for room
-    public void Init(int width, int height)
-    {
-        this.width = width;
-        this.height = height;
-
-    }
-
+    //Gets list of doors
     public List<DoorTile> getDoors()
     {
         return doors;
     }
 
+    //Gets roomnumber
     public int getRoomNumber()
     {
         return number;
     }
 
+    //Sets roomnumber
     public void setRoomNumber(int number)
     {
         this.number = number;
     }
 
+    //Adds door to list of doors if it isn't already there
     public void addDoor(DoorTile door)
     {
-       // foreach (DoorTile temp in doors)
-            //if (temp.direction == door.direction)
-                //doors.Remove(temp);
-        doors.Add(door);
+        if(!doors.Contains(door))
+            doors.Add(door);
     }
 
+    //Gets list of all directions the room has
     public List<int> getDirections()
     {
         return directions;
     }
 
+    //Adds a direction to room's direction list
     public void addDirection(int direction)
     {
         if (!directions.Contains(direction) && direction <= 4)
@@ -172,16 +119,19 @@ public class RoomComponent {
             directions.Add(0);
     }
 
+    //Adds a pickable key to the room
     public void addKey(GameObject key)
     {
         this.key = key;
     }
 
+    //Gets the placed key
     public GameObject getKey()
     {
         return key;
     }
 
+    //Gets the neighbour in parameterized direction
     public RoomComponent getNeighbour(int direction)
     {
         RoomComponent neighbour = null;
@@ -203,12 +153,8 @@ public class RoomComponent {
         return neighbour;
     }
 
-    public void clearDirections()
-    {
-        directions.Clear();
-        System.GC.Collect();
-    }
 
+    //Finds the direction from which the neighbour of the actual room is reachable
     public Enums.Direction findDirection(RoomComponent neighbour)
     {
         Enums.Direction result = Enums.Direction.DEADEND;
@@ -225,18 +171,7 @@ public class RoomComponent {
         return result;
     }
 
-    public bool isExisting(RoomComponent optionA, RoomComponent optionB)
-    {
-        bool result = false;
-
-        if(optionA.hasNeighbour(2) && optionA.rightNeighbour == optionB.topNeighbour && optionB.hasNeighbour(4))
-        {
-            result = true;
-        }
-
-        return result;
-    }
-
+    //Checks if room has direction
     public bool hasDirection(int direction)
     {
         bool result = false;
@@ -251,6 +186,7 @@ public class RoomComponent {
         return result;
     }
 
+    //Checks if room has door
     public bool hasDoor(DoorTile door)
     {
         bool result = false;
@@ -265,6 +201,7 @@ public class RoomComponent {
         return result;
     }
 
+    //Gets desired door 
     public DoorTile findDoor(DoorTile door)
     {
         foreach(DoorTile temp in doors)
@@ -275,6 +212,7 @@ public class RoomComponent {
         return null;
     }
 
+    //Checks if room has neighbour in direction
     public bool hasNeighbour(int direction)
     {
         Enums.Direction dir = (Enums.Direction)direction;
@@ -310,19 +248,66 @@ public class RoomComponent {
         return result;        
     }
 
+    //Gets width of room
     public int getWidth()
     {
         return width;
     }
 
+    //Gets height of room
     public int getHeight()
     {
         return height;
     }
 
+    //Gets the amount of door the room has
     public int getNumOfDoors()
     {
         return numOfDoors;
     }
+
+    //Locks the rooms
+    public void setLock(bool locked)
+    {
+        this.locked = locked;
+    }
+
+    //Returns true if room is locked
+    public bool getLock()
+    {
+        return locked;
+    }
+
+    //Returns amount of monsters in room
+    public int getMonsterCount()
+    {
+        return monsterCount;
+    }
+
+    //Sets amount of monsters in room
+    public void setMonsterCount(int monsterCount)
+    {
+        this.monsterCount = monsterCount;
+    }
+
+    //Add a monster to rooms list of monsters
+    public void addMonster(Enums.Monster monster)
+    {
+        monsters.Add(monster);
+    }
+
+    //Returns list of monsters
+    public List<Enums.Monster> getMonsters()
+    {
+        return monsters;
+    }
+
+    //Removes parameterized direction
+    public void removeDirection(int direction)
+    {
+        if(directions.Contains(direction))
+            directions.Remove(direction);
+    }
+
 
 }

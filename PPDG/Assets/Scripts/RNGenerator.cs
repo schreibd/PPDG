@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+
 //Singleton concept to have just one instance of this class
 //Won't get destroyed (including Gameobject attached on) on loading new scene
-
 public class RNGenerator : MonoBehaviour{
 
     public static RNGenerator Instance { get; private set; }
-    // Use this for initialization
+
     private void Awake()
     {
         if (!Instance)
@@ -22,8 +22,8 @@ public class RNGenerator : MonoBehaviour{
     }
 
 
-    // Use this for initialization
 
+    // Use this for initialization
     //Sets seed as state for rn generation
     public void init(string input)
     {
@@ -31,7 +31,7 @@ public class RNGenerator : MonoBehaviour{
     }
 
 
-    //Can be used to get some random numbers for level instantiation
+    //Is used to randomize the number of rooms per level stage
     public int getInitValues(int level)
     {
         float min = 5;
@@ -46,23 +46,22 @@ public class RNGenerator : MonoBehaviour{
         return result;
     }
 
+    //Is used to get 4 possible randomized directions per room
     public List<float> getRoomSequence(int numOfRooms)
     {
         List<float> result = new List<float>();
 
         for(int i = 0; i < numOfRooms * 4; i++)
-        //for (int i = 0; i < numOfRooms; i++)
         {
             result.Add(getNextNumber(0, 100));
         }
 
-
         return result;
     }
 
+    //Returns the next pseudo-random number with our seed
     public float getNextNumber(float min, float max)
     {
-        float value = Random.Range(min, max);
-        return value;
+        return Random.Range(min, max); 
     }
 }

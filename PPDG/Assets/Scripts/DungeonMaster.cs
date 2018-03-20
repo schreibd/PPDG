@@ -48,9 +48,9 @@ public class DungeonMaster : MonoBehaviour {
         //Gets a sequence of random numbers we need to generate the rooms and their directions
         roomSequence = RNGenerator.Instance.getRoomSequence(numOfRooms);
 
-        start();
+        newBeginning();
         while (!isValidDungeon())
-            start();
+            newBeginning();
         
         ContentCreator.Instance.lockDoors(rooms);
         MonsterSpawner.calculateMonsters(rooms);
@@ -81,9 +81,9 @@ public class DungeonMaster : MonoBehaviour {
 
         Minimap.Instance.clearScreen(false);
 
-        start();
+        newBeginning();
         while (!isValidDungeon())
-            start();
+            newBeginning();
 
         ContentCreator.Instance.lockDoors(rooms);
         MonsterSpawner.calculateMonsters(rooms);
@@ -104,7 +104,7 @@ public class DungeonMaster : MonoBehaviour {
 
     } 
 
-    void start()
+    void newBeginning()
     {
         rooms = new List<RoomComponent>();
 
@@ -187,7 +187,7 @@ public class DungeonMaster : MonoBehaviour {
                             }
                            else
                             {
-                                start();
+                                newBeginning();
                             }
                             
                         }
@@ -244,7 +244,7 @@ public class DungeonMaster : MonoBehaviour {
   
     public void moveForward(Vector3Int pos, Enums.Direction direction)
     {
-        //RoomInterpolator.Instance.activate();
+        RoomInterpolator.Instance.activate();
         
         List<int> directions = rooms[pointerOnRoom].getDirections();
 

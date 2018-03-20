@@ -65,7 +65,7 @@ public class RoomBuilder : MonoBehaviour{
 
         currFloorMap = grid.transform.GetChild(0).GetComponent<Tilemap>();
 
-        //Create a ColliderTilemap for walls and obstacles
+        //Gets the Tilemap we want to use for our walls and adds a TilemapCollider2D
         currWallMap = grid.transform.GetChild(1).GetComponent<Tilemap>();
         currWallMap.gameObject.AddComponent<TilemapCollider2D>();
 
@@ -203,8 +203,6 @@ public class RoomBuilder : MonoBehaviour{
 
     void drawFloor()
     {
-       
-        Tile[] floorTiles = new Tile[currentRoom.getWidth() * currentRoom.getHeight()];
         for(int i = 0; i < height; i++)
         {
             for(int j = 0; j < width; j++)
@@ -220,16 +218,13 @@ public class RoomBuilder : MonoBehaviour{
     void drawWalls()
     {
         Tile tile;
-        Vector3Int hOffset = new Vector3Int(-1, -1, 0);
-        Tile[] wallTilesHorizontal = new Tile[(currentRoom.getWidth() * 2) + 4];
-        Tile[] wallTilesVertical = new Tile[currentRoom.getHeight() * 2];
+        Vector3Int offset = new Vector3Int(-1, -1, 0);
         for(int i = 0; i < width + 2; i++)
         {
             tile = Tile.CreateInstance<Tile>();
-            //Needs variation for texture
             tile.sprite = wallTexture;
-            currWallMap.SetTile(new Vector3Int(i, 0, 0)+hOffset, tile);
-            currWallMap.SetTile(new Vector3Int(i, currentRoom.getHeight()-1, 0) + hOffset, tile);
+            currWallMap.SetTile(new Vector3Int(i, 0, 0)+offset, tile);
+            currWallMap.SetTile(new Vector3Int(i, currentRoom.getHeight()-1, 0) + offset, tile);
         }
         
         for(int j = 0; j < height; j++)
