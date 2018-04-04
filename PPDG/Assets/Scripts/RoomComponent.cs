@@ -9,6 +9,7 @@ public class RoomComponent {
     private List<DoorTile> doors = new List<DoorTile>();
     private GameObject key;
     private int numOfDoors;
+
     private int xPos;
     private int yPos;
 
@@ -29,7 +30,7 @@ public class RoomComponent {
 
     private List<Enums.Monster> monsters = new List<Enums.Monster>();
 
-    //Initialzes datastructure for room
+    //Initializes datastructure for room
     public void Init(int width, int height)
     {
         this.width = width;
@@ -108,6 +109,17 @@ public class RoomComponent {
     public List<int> getDirections()
     {
         return directions;
+    }
+
+    public int findFreeDirection()
+    {
+        int c = 1; 
+        while(c <= 4)
+        {
+            if (!directions.Contains(c))
+                return c;
+        }
+        return 0;
     }
 
     //Adds a direction to room's direction list
@@ -308,6 +320,4 @@ public class RoomComponent {
         if(directions.Contains(direction))
             directions.Remove(direction);
     }
-
-
 }

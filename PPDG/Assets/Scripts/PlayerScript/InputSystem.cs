@@ -29,11 +29,9 @@ public class InputSystem : MonoBehaviour {
         var move = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0);
         if (move.x < 0.0f)
         {
-            //Debug.Log(Input.GetAxis("Horizontal"));
             animator.SetBool("right", false);
             animator.SetBool("idle", false);
             
-            //m_PlayerTransform.localScale.Set(-1, m_PlayerTransform.localScale.y, m_PlayerTransform.localScale.z);
         }
 
         if(Input.GetButtonDown("Fire1"))
